@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     divisi: DataTypes.STRING,
     kode_depo: DataTypes.INTEGER,
     nama_depo: DataTypes.STRING,
-    status: DataTypes.ENUM
+    status: DataTypes.ENUM('active', 'inactive')
   }, {
     sequelize,
     modelName: 'pic',

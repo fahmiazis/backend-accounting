@@ -1,0 +1,10 @@
+const route = require('express').Router()
+const user = require('../controllers/user')
+
+route.post('/add', user.addUser)
+route.get('/get', user.getUsers)
+route.patch('/update/:id', user.updateUser)
+route.delete('/delete/:id', user.deleteUser)
+route.get('/detail/:id', user.getDetailUser)
+
+module.exports = route

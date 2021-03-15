@@ -19,6 +19,6 @@ module.exports = (req, res, next) => {
       return responseStandard(res, err.message, {}, 500, false)
     }
   } else {
-    return responseStandard(res, 'Forbidden', {}, 403, false)
+    return responseStandard(res, 'Forbidden Access', {}, 403, false)
   }
 }
