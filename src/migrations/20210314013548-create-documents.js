@@ -8,10 +8,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      kode_dokumen: {
+        type: Sequelize.STRING,
+        unique: true
+      },
       nama_dokumen: {
         type: Sequelize.STRING
       },
-      jenis: {
+      jenis_dokumen: {
         type: Sequelize.ENUM('daily', 'monthly')
       },
       divisi: {
@@ -26,12 +30,8 @@ module.exports = {
       status: {
         type: Sequelize.ENUM('active', 'inactive')
       },
-      nama_pic: {
-        type: Sequelize.STRING
-      },
       kode_depo: {
-        type: Sequelize.INTEGER,
-        unique: true
+        type: Sequelize.INTEGER
       },
       lock_dokumen: {
         type: Sequelize.TINYINT

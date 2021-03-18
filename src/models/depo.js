@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     kode_depo: DataTypes.INTEGER,
     nama_depo: DataTypes.STRING,
     home_town: DataTypes.STRING,
-    divisi: DataTypes.STRING,
+    channel: DataTypes.STRING,
     distribution: DataTypes.STRING,
     status_depo: DataTypes.STRING,
     kode_sap_1: DataTypes.STRING,
@@ -29,8 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     nama_pic_1: DataTypes.STRING,
     nama_pic_2: DataTypes.STRING,
     nama_pic_3: DataTypes.STRING,
-    nama_pic_4: DataTypes.STRING,
-    channel: DataTypes.STRING
+    nama_pic_4: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'depo'

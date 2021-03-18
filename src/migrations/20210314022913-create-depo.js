@@ -18,7 +18,7 @@ module.exports = {
       home_town: {
         type: Sequelize.STRING
       },
-      divisi: {
+      channel: {
         type: Sequelize.STRING
       },
       distribution: {
@@ -28,13 +28,16 @@ module.exports = {
         type: Sequelize.STRING
       },
       kode_sap_1: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       },
       kode_sap_2: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       },
       kode_plant: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       },
       nama_grom: {
         type: Sequelize.STRING
@@ -55,9 +58,6 @@ module.exports = {
         type: Sequelize.STRING
       },
       nama_pic_4: {
-        type: Sequelize.STRING
-      },
-      channel: {
         type: Sequelize.STRING
       },
       createdAt: {

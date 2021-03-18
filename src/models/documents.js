@@ -14,13 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   documents.init({
+    kode_dokumen: DataTypes.STRING,
     nama_dokumen: DataTypes.STRING,
-    jenis: DataTypes.ENUM('daily', 'monthly'),
+    jenis_dokumen: DataTypes.ENUM('daily', 'monthly'),
     divisi: DataTypes.STRING,
     status_depo: DataTypes.STRING,
     create_date: DataTypes.DATE,
     status: DataTypes.ENUM('active', 'inactive'),
-    nama_pic: DataTypes.STRING,
     kode_depo: DataTypes.INTEGER,
     lock_dokumen: DataTypes.TINYINT,
     alasanId: DataTypes.INTEGER,
@@ -31,4 +31,4 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'documents'
   })
   return documents
-};
+}

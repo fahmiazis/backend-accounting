@@ -8,20 +8,26 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      kode_area: {
-        type: Sequelize.INTEGER,
+      kode_plant: {
+        type: Sequelize.STRING,
         unique: true
       },
-      nama_depo: {
-        type: Sequelize.STRING
-      },
-      email_bm: {
+      area: {
         type: Sequelize.STRING
       },
       email_aos: {
         type: Sequelize.STRING
       },
-      email_sa: {
+      email_ho_pic: {
+        type: Sequelize.STRING
+      },
+      email_bm: {
+        type: Sequelize.STRING
+      },
+      email_grom: {
+        type: Sequelize.STRING
+      },
+      email_rom: {
         type: Sequelize.STRING
       },
       email_ho_1: {
@@ -34,6 +40,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       email_ho_4: {
+        type: Sequelize.STRING
+      },
+      email_sa: {
         type: Sequelize.STRING
       },
       status: {

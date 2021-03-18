@@ -22,16 +22,21 @@ module.exports = {
         return response(res, 'Error', { error: error.message }, 401, false)
       } else {
         if (level === 1) {
-          const result = await users.findOne({ where: { username: results.username } })
-          if (result) {
-            return response(res, 'username already use')
+          const result = await users.findAll({ where: { username: results.username } })
+          if (result.length > 0) {
+            return response(res, 'username already use', {}, 404, false)
           } else {
-            results.password = await bcrypt.hash(results.password, await bcrypt.genSalt())
-            const result = await users.create(results)
-            if (result) {
-              return response(res, 'Add User succesfully', { result })
+            const result = await users.findAll({ where: { kode_depo: results.kode_depo } })
+            if (result.length > 0) {
+              return response(res, 'kode depo already use', {}, 404, false)
             } else {
-              return response(res, 'Fail to create user', {}, 400, false)
+              results.password = await bcrypt.hash(results.password, await bcrypt.genSalt())
+              const result = await users.create(results)
+              if (result) {
+                return response(res, 'Add User succesfully', { result })
+              } else {
+                return response(res, 'Fail to create user', {}, 400, false)
+              }
             }
           }
         } else {
