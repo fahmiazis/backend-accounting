@@ -22,7 +22,7 @@ module.exports = {
       } else {
         if (level === 1) {
           const result = await pic.findAll({ where: { kode_depo: results.kode_depo } })
-          if (result) {
+          if (result.length > 0) {
             return response(res, 'kode depo already exist', {}, 404, false)
           } else {
             const result = await pic.create(results)
@@ -160,7 +160,7 @@ module.exports = {
             return response(res, 'pic not found', {}, 404, false)
           }
         } else {
-          const result = pic.findByPk(id)
+          const result = await pic.findByPk(id)
           if (result) {
             return response(res, `succesfully get pic with id ${id}`, { result })
           } else {

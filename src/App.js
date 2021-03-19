@@ -22,6 +22,9 @@ const divisiRoute = require('./routes/divisi')
 const emailRoute = require('./routes/email')
 const dokumenRoute = require('./routes/dokumen')
 const depoRoute = require('./routes/depo')
+const picRoute = require('./routes/pic')
+
+app.use('/uploads', express.static('assets/documents'))
 
 app.use('/auth', authRoute)
 app.use('/user', authMiddleware, userRoute)
@@ -30,6 +33,7 @@ app.use('/divisi', authMiddleware, divisiRoute)
 app.use('/email', authMiddleware, emailRoute)
 app.use('/dokumen', authMiddleware, dokumenRoute)
 app.use('/depo', authMiddleware, depoRoute)
+app.use('/pic', authMiddleware, picRoute)
 
 app.get('*', (req, res) => {
   response(res, 'Error route not found', {}, 404, false)

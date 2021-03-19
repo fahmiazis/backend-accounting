@@ -9,6 +9,7 @@ module.exports = {
     try {
       const level = req.user.level
       const schema = joi.object({
+        kode_alasan: joi.string().required(),
         alasan: joi.string().required(),
         status: joi.string().required()
       })
@@ -18,14 +19,19 @@ module.exports = {
       } else {
         if (level === 1) {
           const result = await alasan.findAll({ where: { alasan: results.alasan } })
-          if (result) {
+          if (result.length > 0) {
             return response(res, 'alasan already exist', {}, 404, false)
           } else {
-            const result = await alasan.create(results)
-            if (result) {
-              return response(res, 'alasan created', { result })
+            const result = await alasan.findAll({ where: { kode_alasan: results.kode_alasan } })
+            if (result.length > 0) {
+              return response(res, 'kode alasan already use', {}, 404, false)
             } else {
-              return response(res, 'failed to create alasan', {}, 404, false)
+              const result = await alasan.create(results)
+              if (result) {
+                return response(res, 'sucessfully created alasan', { result })
+              } else {
+                return response(res, 'failed to create alasan', {}, 404, false)
+              }
             }
           }
         } else {
@@ -41,6 +47,7 @@ module.exports = {
       const level = req.user.level
       const id = req.params.id
       const schema = joi.object({
+        kode_alasan: joi.string(),
         alasan: joi.string(),
         status: joi.string()
       })
@@ -49,18 +56,66 @@ module.exports = {
         return response(res, 'Error', { error: error.message }, 401, false)
       } else {
         if (level === 1) {
-          const result = await alasan.findAll({
-            where: {
-              alasan: results.alasan,
-              [Op.not]: { id: id }
+          if (results.alasan) {
+            const result = await alasan.findAll({
+              where: {
+                alasan: results.alasan,
+                [Op.not]: { id: id }
+              }
+            })
+            if (result.length > 0) {
+              return response(res, 'alasan already exist', {}, 404, false)
+            } else {
+              if (results.kode_alasan) {
+                const result = await alasan.findAll({
+                  where: {
+                    kode_lasan: results.kode_alasan,
+                    [Op.not]: { id: id }
+                  }
+                })
+                if (result.length > 0) {
+                  return response(res, 'kode alasan already use', {}, 404, false)
+                } else {
+                  const result = await alasan.findByPk(id)
+                  if (result) {
+                    await result.update(results)
+                    return response(res, 'update alasan successfully', { result })
+                  } else {
+                    return response(res, 'failed to update alasan', {}, 404, false)
+                  }
+                }
+              } else {
+                const result = await alasan.findByPk(id)
+                if (result) {
+                  await result.update(results)
+                  return response(res, 'update alasan successfully', { result })
+                } else {
+                  return response(res, 'failed to update alasan', {}, 404, false)
+                }
+              }
             }
-          })
-          if (result.length > 0) {
-            return response(res, 'alasan already exist', {}, 404, false)
+          } else if (results.kode_alasan) {
+            const result = await alasan.findAll({
+              where: {
+                kode_lasan: results.kode_alasan,
+                [Op.not]: { id: id }
+              }
+            })
+            if (result.length > 0) {
+              return response(res, 'kode alasan already use', {}, 404, false)
+            } else {
+              const result = await alasan.findByPk(id)
+              if (result) {
+                await result.update(results)
+                return response(res, 'update alasan successfully', { result })
+              } else {
+                return response(res, 'failed to update alasan', {}, 404, false)
+              }
+            }
           } else {
             const result = await alasan.findByPk(id)
             if (result) {
-              alasan.update(results)
+              await result.update(results)
               return response(res, 'update alasan successfully', { result })
             } else {
               return response(res, 'failed to update alasan', {}, 404, false)
@@ -120,7 +175,10 @@ module.exports = {
       }
       const result = await alasan.findAndCountAll({
         where: {
-          [Op.like]: `%${searchValue}%`
+          [Op.or]: [
+            { kode_alasan: { [Op.like]: `%${searchValue}%` } },
+            { alasan: { [Op.like]: `%${searchValue}%` } }
+          ]
         },
         order: [[sortValue, 'ASC']],
         limit: limit,

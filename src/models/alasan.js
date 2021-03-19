@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   alasan.init({
+    kode_alasan: DataTypes.STRING,
     alasan: DataTypes.STRING,
     status: DataTypes.ENUM('active', 'inactive')
   }, {

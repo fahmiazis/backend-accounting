@@ -24,9 +24,6 @@ module.exports = {
       status_depo: {
         type: Sequelize.STRING
       },
-      create_date: {
-        type: Sequelize.DATE
-      },
       status: {
         type: Sequelize.ENUM('active', 'inactive')
       },
@@ -36,8 +33,8 @@ module.exports = {
       lock_dokumen: {
         type: Sequelize.TINYINT
       },
-      alasanId: {
-        type: Sequelize.INTEGER
+      alasan: {
+        type: Sequelize.STRING
       },
       status_dokumen: {
         type: Sequelize.INTEGER

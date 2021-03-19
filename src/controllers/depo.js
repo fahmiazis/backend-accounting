@@ -1,7 +1,7 @@
 const joi = require('joi')
 const { depo } = require('../models')
 const { pagination } = require('../helpers/pagination')
-const response = require('../helpers/pagination')
+const response = require('../helpers/response')
 const { Op } = require('sequelize')
 
 module.exports = {
@@ -18,11 +18,11 @@ module.exports = {
         kode_sap_1: joi.string().required(),
         kode_sap_2: joi.string().required(),
         kode_plant: joi.string().required(),
-        nama_grom: joi.string().required(),
-        nama_bm: joi.string().required(),
-        nama_ass: joi.string().required(),
-        nama_pic_1: joi.string().required(),
-        nama_pic_2: joi.string().required(),
+        nama_grom: joi.string(),
+        nama_bm: joi.string(),
+        nama_ass: joi.string(),
+        nama_pic_1: joi.string(),
+        nama_pic_2: joi.string(),
         nama_pic_3: joi.string(),
         nama_pic_4: joi.string()
       })

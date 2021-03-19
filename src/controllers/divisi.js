@@ -18,7 +18,7 @@ module.exports = {
       } else {
         if (level === 1) {
           const result = await divisi.findAll({ where: { divisi: results.divisi } })
-          if (result) {
+          if (result.length > 0) {
             return response(res, 'division already exists', {}, 404, false)
           } else {
             const result = await divisi.create(results)
@@ -60,7 +60,7 @@ module.exports = {
           } else {
             const result = await divisi.findByPk(id)
             if (result) {
-              divisi.update(results)
+              await result.update(results)
               return response(res, 'successfully update divisi', { result })
             } else {
               return response(res, 'failed to update divisi', {}, 404, false)
@@ -120,7 +120,7 @@ module.exports = {
       }
       const result = await divisi.findAndCountAll({
         where: {
-          [Op.like]: `%${searchValue}%`
+          divisi: { [Op.like]: `%${searchValue}%` }
         },
         order: [[sortValue, 'ASC']],
         limit: limit,

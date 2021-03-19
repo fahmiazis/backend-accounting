@@ -55,12 +55,12 @@ module.exports = {
       } else {
         const result = await users.findOne({ where: { username: results.username } })
         if (result) {
-          return response(res, 'username already use')
+          return response(res, 'username already use', {}, 404, false)
         } else {
           results.password = await bcrypt.hash(results.password, await bcrypt.genSalt())
           const result = await users.create(results)
           if (result) {
-            return response(res, 'Add User succesfully')
+            return response(res, 'Add User succesfully', { result })
           } else {
             return response(res, 'Fail to create user', {}, 400, false)
           }

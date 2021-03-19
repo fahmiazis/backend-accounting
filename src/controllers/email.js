@@ -10,17 +10,17 @@ module.exports = {
       const level = req.user.level
       const schema = joi.object({
         kode_plant: joi.string().required(),
-        area: joi.string().required().email(),
+        area: joi.string().required(),
         email_bm: joi.string().required().email(),
         email_aos: joi.string().required().email(),
-        email_sa: joi.string().required().email(),
+        email_sa: joi.string().email(),
         email_ho_pic: joi.string().email().required(),
         email_grom: joi.string().email().required(),
         email_rom: joi.string().email().required(),
-        email_ho_1: joi.string().email().required(),
-        email_ho_2: joi.string().email().required(),
-        email_ho_3: joi.string().email().required(),
-        email_ho_4: joi.string().email().required()
+        email_ho_1: joi.string().email(),
+        email_ho_2: joi.string().email(),
+        email_ho_3: joi.string().email(),
+        email_ho_4: joi.string().email()
       })
       const { value: results, error } = schema.validate(req.body)
       if (error) {
@@ -28,7 +28,7 @@ module.exports = {
       } else {
         if (level === 1) {
           const result = await email.findAll({ where: { kode_plant: results.kode_plant } })
-          if (result) {
+          if (result.length > 0) {
             return response(res, 'kode plant already exist', {}, 400, false)
           } else {
             const result = await email.create(results)
@@ -197,6 +197,7 @@ module.exports = {
       const id = req.params.id
       if (level === 1) {
         const result = await email.findByPk(id)
+        console.log(result)
         if (result) {
           await result.destroy()
           return response(res, 'successfully delete email', { result })

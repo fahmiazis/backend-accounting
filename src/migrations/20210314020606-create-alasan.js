@@ -8,8 +8,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      kode_alasan: {
+        type: Sequelize.STRING,
+        unique: true
+      },
       alasan: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       },
       status: {
         type: Sequelize.ENUM('active', 'inactive')

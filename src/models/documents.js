@@ -19,11 +19,10 @@ module.exports = (sequelize, DataTypes) => {
     jenis_dokumen: DataTypes.ENUM('daily', 'monthly'),
     divisi: DataTypes.STRING,
     status_depo: DataTypes.STRING,
-    create_date: DataTypes.DATE,
     status: DataTypes.ENUM('active', 'inactive'),
     kode_depo: DataTypes.INTEGER,
     lock_dokumen: DataTypes.TINYINT,
-    alasanId: DataTypes.INTEGER,
+    alasan: DataTypes.STRING,
     status_dokumen: DataTypes.INTEGER,
     path: DataTypes.STRING
   }, {
