@@ -6,5 +6,7 @@ route.get('/get', user.getUsers)
 route.patch('/update/:id', user.updateUser)
 route.delete('/delete/:id', user.deleteUser)
 route.get('/detail/:id', user.getDetailUser)
+route.post('/master', user.uploadMasterUser)
+route.get('/export', user.exportSqlUser)
 
 module.exports = route

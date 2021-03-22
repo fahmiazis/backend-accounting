@@ -28,11 +28,11 @@ module.exports = {
         type: Sequelize.STRING
       },
       kode_sap_1: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         unique: true
       },
       kode_sap_2: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         unique: true
       },
       kode_plant: {
@@ -62,11 +62,13 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')
       }
     })
   },

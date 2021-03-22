@@ -9,18 +9,21 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       divisi: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       },
       status: {
         type: Sequelize.ENUM('active', 'inactive')
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn('NOW')
       }
     })
   },

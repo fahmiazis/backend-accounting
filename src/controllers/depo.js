@@ -1,8 +1,15 @@
 const joi = require('joi')
-const { depo } = require('../models')
+const { depo, sequelize } = require('../models')
 const { pagination } = require('../helpers/pagination')
 const response = require('../helpers/response')
-const { Op } = require('sequelize')
+const { Op, QueryTypes } = require('sequelize')
+const readXlsxFile = require('read-excel-file/node')
+const multer = require('multer')
+const uploadMaster = require('../helpers/uploadMaster')
+const fs = require('fs')
+const excel = require('exceljs')
+const vs = require('fs-extra')
+const { APP_URL } = process.env
 
 module.exports = {
   createDepo: async (req, res) => {
@@ -231,6 +238,102 @@ module.exports = {
             return response(res, 'failed get detail depo', {}, 404, false)
           }
         }
+      }
+    } catch (error) {
+      return response(res, error.message, {}, 500, false)
+    }
+  },
+  uploadMasterDepo: async (req, res) => {
+    const level = req.user.level
+    if (level === 1) {
+      uploadMaster(req, res, async function (err) {
+        try {
+          if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0) {
+              console.log(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length > 0)
+              return response(res, 'fieldname doesnt match', {}, 500, false)
+            }
+            return response(res, err.message, {}, 500, false)
+          } else if (err) {
+            return response(res, err.message, {}, 401, false)
+          }
+          const dokumen = `assets/masters/${req.files[0].filename}`
+          const rows = await readXlsxFile(dokumen)
+          const count = []
+          const cek = ['Kode Depo', 'Nama Depo', 'Home Town', 'Channel', 'Distribution', 'Status Depo', 'Kode SAP 1', 'Kode SAP 2', 'Kode Plant', 'Nama GROM', 'Nama BM', 'Nama ASS', 'Nama PIC 1', 'Nama PIC 2', 'Nama PIC 3', 'Nama PIC 4']
+          const valid = rows[0]
+          for (let i = 0; i < cek.length; i++) {
+            if (valid[i] === cek[i]) {
+              console.log(`${valid[i]} === ${cek[i]}`)
+              count.push(1)
+            }
+          }
+          if (count.length === cek.length) {
+            rows.shift()
+            const result = await sequelize.query(`INSERT INTO depos (kode_depo, nama_depo, home_town, channel, distribution, status_depo, kode_sap_1, kode_sap_2, kode_plant, nama_grom, nama_bm, nama_ass, nama_pic_1, nama_pic_2, nama_pic_3, nama_pic_4) VALUES ${rows.map(a => '(?)').join(',')}`,
+              {
+                replacements: rows,
+                type: QueryTypes.INSERT
+              })
+            if (result) {
+              fs.unlink(dokumen, function (err) {
+                if (err) throw err
+                console.log('success')
+              })
+              return response(res, 'successfully upload file master')
+            } else {
+              fs.unlink(dokumen, function (err) {
+                if (err) throw err
+                console.log('success')
+              })
+              return response(res, 'failed to upload file', {}, 404, false)
+            }
+          } else {
+            fs.unlink(dokumen, function (err) {
+              if (err) throw err
+              console.log('success')
+            })
+            return response(res, 'Failed to upload master file, please use the template provided', {}, 400, false)
+          }
+        } catch (error) {
+          return response(res, error.message, {}, 500, false)
+        }
+      })
+    } else {
+      return response(res, "You're not super administrator", {}, 404, false)
+    }
+  },
+  exportSqlDepo: async (req, res) => {
+    try {
+      const result = await depo.findAll()
+      if (result) {
+        const workbook = new excel.Workbook()
+        const worksheet = workbook.addWorksheet()
+        const arr = []
+        const header = ['Kode Depo', 'Nama Depo', 'Home Town', 'Channel', 'Distribution', 'Status Depo', 'Kode SAP 1', 'Kode SAP 2', 'Kode Plant', 'Nama GROM', 'Nama BM', 'Nama ASS', 'Nama PIC 1', 'Nama PIC 2', 'Nama PIC 3', 'Nama PIC 4']
+        const key = ['kode_depo', 'nama_depo', 'home_town', 'channel', 'distribution', 'status_depo', 'kode_sap_1', 'kode_sap_2', 'kode_plant', 'nama_grom', 'nama_bm', 'nama_ass', 'nama_pic_1', 'nama_pic_2', 'nama_pic_3', 'nama_pic_4']
+        for (let i = 0; i < header.length; i++) {
+          let temp = { header: header[i], key: key[i] }
+          arr.push(temp)
+          temp = {}
+        }
+        worksheet.columns = arr
+        const cek = worksheet.addRows(result)
+        if (cek) {
+          const name = new Date().getTime().toString().concat('-depo').concat('.xlsx')
+          await workbook.xlsx.writeFile(name)
+          vs.move(name, `assets/exports/${name}`, function (err) {
+            if (err) {
+              throw err
+            }
+            console.log('success')
+          })
+          return response(res, 'success', { link: `${APP_URL}/download/${name}` })
+        } else {
+          return response(res, 'failed create file', {}, 404, false)
+        }
+      } else {
+        return response(res, 'failed', {}, 404, false)
       }
     } catch (error) {
       return response(res, error.message, {}, 500, false)

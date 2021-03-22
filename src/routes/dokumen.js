@@ -9,5 +9,7 @@ route.get('/detail/:id', dokumen.getDetailDocument)
 route.patch('/upload/:id', dokumen.uploadDocument)
 route.patch('/reject/:id', dokumen.rejectDocument)
 route.patch('/approve/:id', dokumen.approveDocument)
+route.post('/master', dokumen.uploadMasterDokumen)
+route.get('/export', dokumen.exportSqlDocument)
 
 module.exports = route

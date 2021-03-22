@@ -1,8 +1,15 @@
 const joi = require('joi')
-const { divisi } = require('../models')
-const { Op } = require('sequelize')
+const { divisi, sequelize } = require('../models')
+const { Op, QueryTypes } = require('sequelize')
 const { pagination } = require('../helpers/pagination')
 const response = require('../helpers/response')
+const readXlsxFile = require('read-excel-file/node')
+const multer = require('multer')
+const uploadMaster = require('../helpers/uploadMaster')
+const fs = require('fs')
+const excel = require('exceljs')
+const vs = require('fs-extra')
+const { APP_URL } = process.env
 
 module.exports = {
   createDivisi: async (req, res) => {
@@ -144,6 +151,96 @@ module.exports = {
         return response(res, `succesfully get divisi with id ${id}`, { result })
       } else {
         return response(res, 'faileed to get divisi', {}, 404, false)
+      }
+    } catch (error) {
+      return response(res, error.message, {}, 500, false)
+    }
+  },
+  uploadMasterDivisi: async (req, res) => {
+    const level = req.user.level
+    if (level === 1) {
+      uploadMaster(req, res, async function (err) {
+        try {
+          if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length === 0) {
+              console.log(err.code === 'LIMIT_UNEXPECTED_FILE' && req.files.length > 0)
+              return response(res, 'fieldname doesnt match', {}, 500, false)
+            }
+            return response(res, err.message, {}, 500, false)
+          } else if (err) {
+            return response(res, err.message, {}, 401, false)
+          }
+          const dokumen = `assets/masters/${req.files[0].filename}`
+          const rows = await readXlsxFile(dokumen)
+          const count = []
+          const cek = ['Nama Divisi']
+          const valid = rows[0]
+          for (let i = 0; i < cek.length; i++) {
+            if (valid[i] === cek[i]) {
+              console.log(`${valid[i]} === ${cek[i]}`)
+              count.push(1)
+            }
+          }
+          if (count.length === cek.length) {
+            rows.shift()
+            const result = await sequelize.query(`INSERT INTO divisis (divisi) VALUES ${rows.map(a => '(?)').join(',')}`,
+              {
+                replacements: rows,
+                type: QueryTypes.INSERT
+              })
+            if (result) {
+              fs.unlink(dokumen, function (err) {
+                if (err) throw err
+                console.log('success')
+              })
+              return response(res, 'successfully upload file master')
+            } else {
+              fs.unlink(dokumen, function (err) {
+                if (err) throw err
+                console.log('success')
+              })
+              return response(res, 'failed to upload file', {}, 404, false)
+            }
+          } else {
+            fs.unlink(dokumen, function (err) {
+              if (err) throw err
+              console.log('success')
+            })
+            return response(res, 'Failed to upload master file, please use the template provided', {}, 400, false)
+          }
+        } catch (error) {
+          return response(res, error.message, {}, 500, false)
+        }
+      })
+    } else {
+      return response(res, "You're not super administrator", {}, 404, false)
+    }
+  },
+  exportSqlDivisi: async (req, res) => {
+    try {
+      const result = await divisi.findAll()
+      if (result) {
+        const workbook = new excel.Workbook()
+        const worksheet = workbook.addWorksheet()
+        worksheet.columns = [
+          { header: 'Divisi', key: 'divisi', width: 10 }
+        ]
+        const cek = worksheet.addRows(result)
+        if (cek) {
+          const name = new Date().getTime().toString().concat('-divisi').concat('.xlsx')
+          await workbook.xlsx.writeFile(name)
+          vs.move(name, `assets/exports/${name}`, function (err) {
+            if (err) {
+              throw err
+            }
+            console.log('success')
+          })
+          return response(res, 'success', { link: `${APP_URL}/download/${name}` })
+        } else {
+          return response(res, 'failed create file', {}, 404, false)
+        }
+      } else {
+        return response(res, 'failed', {}, 404, false)
       }
     } catch (error) {
       return response(res, error.message, {}, 500, false)

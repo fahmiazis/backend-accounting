@@ -25,6 +25,8 @@ const depoRoute = require('./routes/depo')
 const picRoute = require('./routes/pic')
 
 app.use('/uploads', express.static('assets/documents'))
+app.use('/masters', express.static('assets/masters'))
+app.use('/download', express.static('assets/exports'))
 
 app.use('/auth', authRoute)
 app.use('/user', authMiddleware, userRoute)
